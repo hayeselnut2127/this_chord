@@ -1,4 +1,7 @@
 import discord
+import config
+
+TOKEN = config.DISCORD_TOKEN
 
 client = discord.Client()
 
@@ -14,4 +17,4 @@ async def on_message(message):
     if message.content.startswith('$h'):
         await message.channel.send('Hello!')
 
-client.run("NzQyMzI0NjAzODc5NDI0MDgx.XzEdqQ.db5W2NYmnFm7fhYm-WJ4SQIbWRk")
+client.run(TOKEN)
