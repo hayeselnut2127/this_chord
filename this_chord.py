@@ -15,7 +15,7 @@ TOKEN = config.DISCORD_TOKEN
 client = discord.Client()
 
 RIOT_API_KEY = config.RIOT_API_KEY
-DELAY = 0.6
+DELAY = 0.2
 
 SUMMONER_IDS = summoners.load_summoners()
 
@@ -253,5 +253,6 @@ async def on_message(message):
             q_win_rate = 100.0 * q_wins / q_games
 
             await message.channel.send(f"{q_desc} - {q_wins} / {q_games} won: {q_win_rate}%")
+            await message.channel.send("-------------------------------------------------------")
 
 client.run(TOKEN)
