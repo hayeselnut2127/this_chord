@@ -253,6 +253,7 @@ async def on_message(message):
             q_win_rate = 100.0 * q_wins / q_games
 
             await message.channel.send(f"{q_desc} - {q_wins} / {q_games} won: {q_win_rate}%")
-            await message.channel.send("-------------------------------------------------------")
+        
+        await message.channel.send("=======================================================")
 
 client.run(TOKEN)
