@@ -15,12 +15,12 @@ TOKEN = config.DISCORD_TOKEN
 client = discord.Client()
 
 RIOT_API_KEY = config.RIOT_API_KEY
-DELAY = 0.2
+DELAY = 0
 
 SUMMONER_IDS = summoners.load_summoners()
 
 def intersection(list_1, list_2):
-    return [x for x in list_1 if x in list_2]
+    return [x for x in list_1 if x in list_2] 
 
 def get_summoner_id(summoner_name):
     if summoner_name in SUMMONER_IDS:
