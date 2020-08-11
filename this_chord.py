@@ -166,26 +166,36 @@ async def on_message(message):
 
     if message.content.startswith('$dewoh'):
 
-        args = message.content.split()
+        args = message.content.split('"')
+        # $dewoh "SUMMONER_NAME_1" "SUMMONER_NAME_2" pages
+        # [0] = '$dewoh '
+        # [1] = 'SUMMONER_NAME_1'
+        # [2] = ' '
+        # [3] = 'SUMMONER_NAME_2'
+        # [4] = ' pages'
 
-        if len(args) != 4:
-            await message.channel.send("USAGE: $dewoh <SUMMONER_NAME_1> <SUMMONER_NAME_2> <pages>")
+        if args[4] == "":
+            await message.channel.send('`Default value for pages = 1`')
+            args[4] = "1"
+
+        if len(args) != 5:
+            await message.channel.send('`USAGE: $dewoh "SUMMONER_NAME_1" "SUMMONER_NAME_2" [pages]`')
             return
 
         sum_name_1 = args[1]
-        sum_name_2 = args[2]
-        pages = int(args[3])
+        sum_name_2 = args[3]
+        pages = int(args[4])
 
         sum_1_id = get_summoner_id(sum_name_1)
         sum_2_id = get_summoner_id(sum_name_2)
-        await message.channel.send(f"{sum_name_1} ID: {sum_1_id}", )
-        await message.channel.send(f"{sum_name_2} ID: {sum_2_id}")
+        await message.channel.send(f"`{sum_name_1} ID: {sum_1_id}`")
+        await message.channel.send(f"`{sum_name_2} ID: {sum_2_id}`")
 
-        await message.channel.send(f"Retrieving match history...")
+        await message.channel.send(f"`Retrieving match history...`")
         sum_1_game_ids = get_game_ids(sum_1_id, pages)
         sum_2_game_ids = get_game_ids(sum_2_id, pages)
         common_game_ids = intersection(sum_1_game_ids, sum_2_game_ids)
-        await message.channel.send(f"Found {len(common_game_ids)} common games:")
+        await message.channel.send(f"`Found {len(common_game_ids)} common games:`")
 
 
         ##################### DETERMINE GAME OUTCOMES ##########################
@@ -198,7 +208,7 @@ async def on_message(message):
             result, game_timestamp, queue_id = get_game_information(g, sum_1_id, sum_2_id)
 
             if result == -1:
-                await message.channel.send(f"[ {index} / {len(common_game_ids)} ] game_id: {g} -- N/A, PLAYED AS OPPONENTS -- {time.ctime(game_timestamp / 1000)}")
+                await message.channel.send(f"`[ {index} / {len(common_game_ids)} ] game_id: {g} -- N/A, PLAYED AS OPPONENTS -- {time.ctime(game_timestamp / 1000)}`")
                 index += 1
                 continue
             
@@ -206,11 +216,11 @@ async def on_message(message):
                 game_results[queue_id] = {"W": 0, "L": 0}
             
             if result == 1:
-                await message.channel.send(f"[ {index} / {len(common_game_ids)} ] game_id: {g} -- WIN -- {time.ctime(game_timestamp / 1000)}")
+                await message.channel.send(f"`[ {index} / {len(common_game_ids)} ] game_id: {g} -- WIN -- {time.ctime(game_timestamp / 1000)}`")
                 game_results[queue_id]["W"] += 1
                 game_results["W"] += 1
             else:
-                await message.channel.send(f"[ {index} / {len(common_game_ids)} ] game_id: {g} -- LOSS -- {time.ctime(game_timestamp / 1000)}")
+                await message.channel.send(f"`[ {index} / {len(common_game_ids)} ] game_id: {g} -- LOSS -- {time.ctime(game_timestamp / 1000)}`")
                 game_results[queue_id]["L"] += 1
                 game_results["L"] += 1
             index += 1
@@ -220,25 +230,25 @@ async def on_message(message):
 
 
         ################################# PRINT ################################
-
+        await message.channel.send("`=======================================================`")
         overall_wins = game_results["W"]
         overall_losses = game_results["L"]
         overall_games = overall_wins + overall_losses
         
         if overall_games == 0:
-            await message.channel.send(f"\n{sum_name_1} and {sum_name_2} have not played together recently")
+            await message.channel.send(f"`{sum_name_1} and {sum_name_2} have not played together recently`")
             return
 
         overall_win_rate = 100.0 * overall_wins / overall_games
 
-        await message.channel.send(f"\nWIN RATE STATISTICS FOR {sum_name_1} AND {sum_name_2}")
-        await message.channel.send("-------------------------------------------------------")
-        await message.channel.send(f"Overall: {overall_wins} / {overall_games} won")
-        await message.channel.send(f"{overall_win_rate}% win rate")
-        await message.channel.send(f"Data from {time.ctime(game_timestamp / 1000)}")
+        await message.channel.send(f"`WIN RATE STATISTICS FOR {sum_name_1} AND {sum_name_2}`")
+        await message.channel.send("`-------------------------------------------------------`")
+        await message.channel.send(f"`Overall: {overall_wins} / {overall_games} won`")
+        await message.channel.send(f"`{overall_win_rate}% win rate`")
+        await message.channel.send(f"`Data from {time.ctime(game_timestamp / 1000)}`")
 
-        await message.channel.send("-------------------------------------------------------")
-        await message.channel.send("Breakdown by queue:")
+        await message.channel.send("`-------------------------------------------------------`")
+        await message.channel.send("`Breakdown by queue:`")
 
         for q in game_results:
             if q == "W" or q == "L":
@@ -252,8 +262,8 @@ async def on_message(message):
             q_games = q_wins + q_losses
             q_win_rate = 100.0 * q_wins / q_games
 
-            await message.channel.send(f"{q_desc} - {q_wins} / {q_games} won: {q_win_rate}%")
+            await message.channel.send(f"`{q_desc} - {q_wins} / {q_games} won: {q_win_rate}%`")
         
-        await message.channel.send("=======================================================")
+        await message.channel.send("`=======================================================`")
 
 client.run(TOKEN)
